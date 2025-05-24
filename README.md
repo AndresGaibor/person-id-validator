@@ -1,103 +1,103 @@
-# TSDX User Guide
+# person-id-validator
 
-Congrats! You just saved yourself hours of work by bootstrapping this project with TSDX. Let’s get you oriented with what’s here and how to use it.
+[![npm version](https://badge.fury.io/js/person-id-validator.svg)](https://badge.fury.io/js/person-id-validator)
 
-> This TSDX setup is meant for developing libraries (not apps!) that can be published to NPM. If you’re looking to build a Node app, you could use `ts-node-dev`, plain `ts-node`, or simple `tsc`.
+## Description
 
-> If you’re new to TypeScript, checkout [this handy cheatsheet](https://devhints.io/typescript)
+This package provides utility functions to validate identity document numbers for Ecuador. It can validate:
 
-## Commands
+*   Cédula (Personal Identity Card)
+*   RUC (Registro Único de Contribuyentes - Unique Taxpayer Registry)
+    *   Persona Natural (Natural Person)
+    *   Sociedad Pública (Public Company)
+    *   Sociedad Privada (Private Company)
 
-TSDX scaffolds your new library inside `/src`.
-
-To run TSDX, use:
+## Installation
 
 ```bash
-npm start # or yarn start
+npm install person-id-validator
 ```
 
-This builds to `/dist` and runs the project in watch mode so any edits you save inside `src` causes a rebuild to `/dist`.
+## Usage
 
-To do a one-off build, use `npm run build` or `yarn build`.
+**Important Note:** The current version of this package and all functions described below are exclusively for validating **Ecuadorian** identity documents (Cédula and RUC).
 
-To run tests, use `npm test` or `yarn test`.
+Here's how you can import and use the validation functions for Ecuadorian IDs:
 
-## Configuration
+```typescript
+import { validarCedula, validar, ValidarIdentificacion } from 'person-id-validator';
 
-Code quality is set up for you with `prettier`, `husky`, and `lint-staged`. Adjust the respective fields in `package.json` accordingly.
+// Example: Validate an Ecuadorian Cédula
+try {
+  const numeroCedula = '1712345678'; // Replace with an actual Ecuadorian Cédula number
+  if (validarCedula(numeroCedula)) {
+    console.log(`Ecuadorian Cédula ${numeroCedula} is valid.`);
+  }
+} catch (error) {
+  console.error(error.message);
+}
 
-### Jest
+// Example: Use the generic validator for an Ecuadorian Cédula or RUC
+try {
+  const numeroIdentificacion = '1791234567001'; // Replace with an Ecuadorian RUC or Cédula
+  const resultado = validar(numeroIdentificacion);
+  if (resultado.ok) {
+    console.log(`Ecuadorian Identification ${numeroIdentificacion} is valid. Type: ${resultado.idType}`);
+  }
+} catch (error) {
+  console.error(error.message);
+}
 
-Jest tests are set up to run with `npm test` or `yarn test`.
-
-### Bundle Analysis
-
-[`size-limit`](https://github.com/ai/size-limit) is set up to calculate the real cost of your library with `npm run size` and visualize the bundle with `npm run analyze`.
-
-#### Setup Files
-
-This is the folder structure we set up for you:
-
-```txt
-/src
-  index.tsx       # EDIT THIS
-/test
-  blah.test.tsx   # EDIT THIS
-.gitignore
-package.json
-README.md         # EDIT THIS
-tsconfig.json
-```
-
-### Rollup
-
-TSDX uses [Rollup](https://rollupjs.org) as a bundler and generates multiple rollup configs for various module formats and build settings. See [Optimizations](#optimizations) for details.
-
-### TypeScript
-
-`tsconfig.json` is set up to interpret `dom` and `esnext` types, as well as `react` for `jsx`. Adjust according to your needs.
-
-## Continuous Integration
-
-### GitHub Actions
-
-Two actions are added by default:
-
-- `main` which installs deps w/ cache, lints, tests, and builds on all pushes against a Node and OS matrix
-- `size` which comments cost comparison of your library on every pull request using [`size-limit`](https://github.com/ai/size-limit)
-
-## Optimizations
-
-Please see the main `tsdx` [optimizations docs](https://github.com/palmerhq/tsdx#optimizations). In particular, know that you can take advantage of development-only optimizations:
-
-```js
-// ./types/index.d.ts
-declare var __DEV__: boolean;
-
-// inside your code...
-if (__DEV__) {
-  console.log('foo');
+// You can also use the ValidarIdentificacion object which groups all validation functions for Ecuadorian IDs:
+try {
+  const rucPrivada = '1791234567001'; // Example Ecuadorian RUC for a private company
+  if (ValidarIdentificacion.validarRucSociedadPrivada(rucPrivada)) {
+    console.log(`Ecuadorian RUC Sociedad Privada ${rucPrivada} is valid.`);
+  }
+} catch (error) {
+  console.error(error.message);
 }
 ```
 
-You can also choose to install and use [invariant](https://github.com/palmerhq/tsdx#invariant) and [warning](https://github.com/palmerhq/tsdx#warning) functions.
+## Supported Countries
 
-## Module Formats
+*   **Ecuador**
 
-CJS, ESModules, and UMD module formats are supported.
+## Future Enhancements
 
-The appropriate paths are configured in `package.json` and `dist/index.js` accordingly. Please report if any issues are found.
+We plan to add support for identity document validation in other countries, including:
 
-## Named Exports
+*   Colombia
+*   Argentina
+*   Spain
 
-Per Palmer Group guidelines, [always use named exports.](https://github.com/palmerhq/typescript#exports) Code split inside your React app instead of your React library.
+## API Documentation
 
-## Including Styles
+Detailed JSDoc comments are available within the source code for more information on each function's parameters and behavior.
 
-There are many ways to ship styles, including with CSS-in-JS. TSDX has no opinion on this, configure how you like.
+## Testing
 
-For vanilla CSS, you can include it at the root directory and add it to the `files` section in your `package.json`, so that it can be imported separately by your users and run through their bundler's loader.
+To run the test suite:
 
-## Publishing to NPM
+```bash
+npm test
+```
 
-We recommend using [np](https://github.com/sindresorhus/np).
+## Configuration Notes (For Developers)
+
+Code quality tools like `prettier`, `husky`, and `lint-staged` are set up. Configuration can be found in `package.json`.
+
+### TypeScript
+
+The `tsconfig.json` is configured for `dom` and `esnext` types. Adjust as needed for development.
+
+## Continuous Integration (For Developers)
+
+GitHub Actions are set up for:
+
+*   **CI Main**: Installs dependencies, lints, tests, and builds on pushes.
+*   **Size**: Comments on pull requests with library size comparisons.
+
+## License
+
+This project is licensed under the MIT License.
