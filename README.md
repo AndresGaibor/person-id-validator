@@ -2,102 +2,190 @@
 
 [![npm version](https://badge.fury.io/js/person-id-validator.svg)](https://badge.fury.io/js/person-id-validator)
 
-## Description
+## Descripción
 
-This package provides utility functions to validate identity document numbers for Ecuador. It can validate:
+Esta librería proporciona funciones de utilidad para validar documentos de identidad de varios países. Actualmente soporta:
 
-*   Cédula (Personal Identity Card)
-*   RUC (Registro Único de Contribuyentes - Unique Taxpayer Registry)
-    *   Persona Natural (Natural Person)
-    *   Sociedad Pública (Public Company)
-    *   Sociedad Privada (Private Company)
+* **Ecuador**: Cédula y RUC (Persona Natural, Sociedad Pública, Sociedad Privada).
+* **Chile**: RUT (RUN).
+* **España**: DNI y NIE.
+* **México**: CURP y RFC.
+* **Argentina**: DNI y CUIT/CUIL.
+* **Colombia**: Cédula y NIT.
+* **Perú**: DNI.
+* **Estados Unidos**: SSN.
 
-## Installation
+## Instalación
+
+Puedes instalar la librería usando tu gestor de paquetes preferido:
+
+### npm
 
 ```bash
+
 npm install person-id-validator
+
 ```
 
-## Usage
+### yarn
 
-**Important Note:** The current version of this package and all functions described below are exclusively for validating **Ecuadorian** identity documents (Cédula and RUC).
+```bash
 
-Here's how you can import and use the validation functions for Ecuadorian IDs:
+yarn add person-id-validator
+
+```
+
+### pnpm
+
+```bash
+
+pnpm add person-id-validator
+
+```
+
+### bun
+
+```bash
+
+bun add person-id-validator
+
+```
+
+## Uso
+
+Puedes usar la función genérica `validar(id, pais)` o importar las funciones específicas para cada país.
+
+### Validación Genérica
 
 ```typescript
-import { validarCedula, validar, ValidarIdentificacion } from 'person-id-validator';
 
-// Example: Validate an Ecuadorian Cédula
-try {
-  const numeroCedula = '1712345678'; // Replace with an actual Ecuadorian Cédula number
-  if (validarCedula(numeroCedula)) {
-    console.log(`Ecuadorian Cédula ${numeroCedula} is valid.`);
-  }
-} catch (error) {
-  console.error(error.message);
+import { validar } from 'person-id-validator';
+
+
+
+// Ecuador
+
+const resultadoEcuador = validar('1712345678', 'ecuador');
+
+if (typeof resultadoEcuador === 'object' && resultadoEcuador.ok) {
+
+  console.log('Documento ecuatoriano válido:', resultadoEcuador.idType);
+
 }
 
-// Example: Use the generic validator for an Ecuadorian Cédula or RUC
-try {
-  const numeroIdentificacion = '1791234567001'; // Replace with an Ecuadorian RUC or Cédula
-  const resultado = validar(numeroIdentificacion);
-  if (resultado.ok) {
-    console.log(`Ecuadorian Identification ${numeroIdentificacion} is valid. Type: ${resultado.idType}`);
-  }
-} catch (error) {
-  console.error(error.message);
-}
 
-// You can also use the ValidarIdentificacion object which groups all validation functions for Ecuadorian IDs:
-try {
-  const rucPrivada = '1791234567001'; // Example Ecuadorian RUC for a private company
-  if (ValidarIdentificacion.validarRucSociedadPrivada(rucPrivada)) {
-    console.log(`Ecuadorian RUC Sociedad Privada ${rucPrivada} is valid.`);
-  }
-} catch (error) {
-  console.error(error.message);
-}
+
+// Chile
+
+const esValidoChile = validar('12.345.678-5', 'chile'); // true
+
+
+
+// España
+
+const esValidoEspana = validar('12345678Z', 'spain'); // true
+
+
+
+// México
+
+const esValidoMexico = validar('HEGT760825HDFLRR03', 'mexico'); // true
+
 ```
 
-## Supported Countries
+### Uso Específico por País
 
-*   **Ecuador**
+Puedes importar objetos con funciones específicas para tener más control.
 
-## Future Enhancements
+```typescript
 
-We plan to add support for identity document validation in other countries, including:
+import { 
 
-*   Colombia
-*   Argentina
-*   Spain
+  Ecuador, 
 
-## API Documentation
+  Chile, 
 
-Detailed JSDoc comments are available within the source code for more information on each function's parameters and behavior.
+  Spain, 
 
-## Testing
+  Mexico, 
 
-To run the test suite:
+  Argentina, 
 
-```bash
-npm test
+  Colombia, 
+
+  Peru, 
+
+  USA 
+
+} from 'person-id-validator';
+
+
+
+// Ecuador
+
+if (Ecuador.validarCedula('1712345678')) {
+
+  console.log('Cédula Ecuatoriana válida');
+
+}
+
+
+
+// Chile (RUT)
+
+if (Chile.validarRut('12.345.678-5')) {
+
+  console.log('RUT Chileno válido');
+
+}
+
+
+
+// España (DNI/NIE)
+
+if (Spain.validarDniNie('X1234567L')) {
+
+  console.log('NIE Español válido');
+
+}
+
+
+
+// Argentina (CUIT)
+
+if (Argentina.validarCuit('20123456786')) {
+
+  console.log('CUIT Argentino válido');
+
+}
+
 ```
 
-## Configuration Notes (For Developers)
+## Países Soportados
 
-Code quality tools like `prettier`, `husky`, and `lint-staged` are set up. Configuration can be found in `package.json`.
+| País | Código en `validar()` | Documentos | Algoritmo |
+| :--- | :--- | :--- | :--- |
+| **Ecuador** | `'ecuador'`, `'ecuatoriano'` | Cédula, RUC | Modulo 10, Modulo 11 |
+| **Chile** | `'chile'`, `'chileno'` | RUT/RUN | Modulo 11 |
+| **España** | `'spain'`, `'españa'` | DNI, NIE | Modulo 23 |
+| **México** | `'mexico'`, `'mexicano'` | CURP, RFC | Algoritmo RENAPO (CURP), Regex (RFC) |
+| **Argentina** | `'argentina'`, `'argentino'` | DNI, CUIT, CUIL | Modulo 11 (CUIT), Regex (DNI) |
+| **Colombia** | `'colombia'`, `'colombiano'` | Cédula, NIT | Modulo 11 (NIT), Regex (Cédula) |
+| **Perú** | `'peru'`, `'peruano'` | DNI | Regex (8 dígitos) + DV Opcional |
+| **EE.UU.** | `'usa'`, `'estados unidos'` | SSN | Regex |
 
-### TypeScript
+## Desarrollo
 
-The `tsconfig.json` is configured for `dom` and `esnext` types. Adjust as needed for development.
+### Scripts
 
-## Continuous Integration (For Developers)
+Puedes ejecutar los comandos de desarrollo con tu herramienta preferida:
 
-GitHub Actions are set up for:
+| Tarea | npm | yarn | pnpm | bun |
+| :--- | :--- | :--- | :--- | :--- |
+| **Tests** | `npm test` | `yarn test` | `pnpm test` | `bun test` |
+| **Lint** | `npm run lint` | `yarn lint` | `pnpm lint` | `bun run lint` |
+| **Build** | `npm run build` | `yarn build` | `pnpm build` | `bun run build` |
 
-*   **CI Main**: Installs dependencies, lints, tests, and builds on pushes.
-*   **Size**: Comments on pull requests with library size comparisons.
+## Licencia
 
-## License
-
-This project is licensed under the MIT License.
+MIT.

@@ -39,7 +39,7 @@ export const validarCedula = (numeroCedula: string) => {
  * @returns {boolean} `true` si el RUC ecuatoriano es válido.
  * @throws {Error} Si el RUC ecuatoriano no cumple con alguno de los criterios de validación.
  */
-function validarRucPersonaNatural(numero: string) {
+export function validarRucPersonaNatural(numero: string) {
   // validaciones
   validarInicial(numero, 13);
   validarCodigoProvincia(numero.substring(0, 2));
@@ -64,7 +64,7 @@ function validarRucPersonaNatural(numero: string) {
  * @returns {boolean} `true` si el RUC ecuatoriano es válido.
  * @throws {Error} Si el RUC ecuatoriano no cumple con alguno de los criterios de validación.
  */
-function validarRucSociedadPrivada(numero: string) {
+export function validarRucSociedadPrivada(numero: string) {
   // validaciones
   validarInicial(numero, 13);
   validarCodigoProvincia(numero.substring(0, 2));
@@ -89,7 +89,7 @@ function validarRucSociedadPrivada(numero: string) {
  * @returns {boolean} `true` si el RUC ecuatoriano es válido.
  * @throws {Error} Si el RUC ecuatoriano no cumple con alguno de los criterios de validación.
  */
-function validarRucSociedadPublica(numero: string) {
+export function validarRucSociedadPublica(numero: string) {
   // validaciones
   validarInicial(numero, 13);
   validarCodigoProvincia(numero.substring(0, 2));
@@ -174,8 +174,6 @@ export const validar = (numero: string) => {
 };
 
 /**
-/**
-/**
  * Realiza validaciones iniciales comunes para Cédula o RUC ecuatoriano.
  *
  * Verifica que:
@@ -207,7 +205,6 @@ function validarInicial(numero: string, caracteres: number) {
 }
 
 /**
-/**
  * Valida el código de provincia (dos primeros dígitos) de una Cédula o RUC ecuatoriano.
  *
  * El código de provincia debe ser un número entre 0 y 24.
@@ -220,9 +217,7 @@ function validarInicial(numero: string, caracteres: number) {
  */
 const validarCodigoProvincia = (numeroProvincia: string) => {
   if (numeroProvincia.length !== 2) {
-    throw new Error(
-      'Código de Provincia debe tener 2 dígitos.'
-    );
+    throw new Error('Código de Provincia debe tener 2 dígitos.');
   }
   const codigoProvincia = parseInt(numeroProvincia, 10);
   if (isNaN(codigoProvincia) || codigoProvincia < 0 || codigoProvincia > 24) {
@@ -235,8 +230,6 @@ const validarCodigoProvincia = (numeroProvincia: string) => {
   return true;
 };
 
-/**
-/**
 /**
  * Valida el tercer dígito de una Cédula o RUC ecuatoriano.
  *
@@ -296,8 +289,6 @@ function validarTercerDigito(
 }
 
 /**
-/**
-/**
  * Valida el código de establecimiento de un RUC ecuatoriano.
  *
  * El código de establecimiento corresponde a los últimos dígitos del RUC ecuatoriano antes del identificador de serie (ej. '001').
@@ -324,8 +315,6 @@ function validarCodigoEstablecimiento(codigo: string) {
   return true;
 }
 
-/**
-/**
 /**
  * Aplica el algoritmo "Módulo 10" para validar el dígito verificador de Cédulas y RUC de personas naturales ecuatorianas.
  * Este algoritmo es específico para la validación de estos documentos en Ecuador.
@@ -359,12 +348,14 @@ function algoritmoModulo10(
   let digitoVerificador: number;
 
   if (digitosIniciales.length !== 9) {
-    throw new Error("Los dígitos iniciales para Módulo 10 deben ser 9.");
+    throw new Error('Los dígitos iniciales para Módulo 10 deben ser 9.');
   }
 
   if (typeof digitoVerificadorParam === 'string') {
     if (digitoVerificadorParam.length !== 1) {
-      throw new Error("El dígito verificador debe ser un solo carácter numérico.");
+      throw new Error(
+        'El dígito verificador debe ser un solo carácter numérico.'
+      );
     }
     digitoVerificador = parseInt(digitoVerificadorParam, 10);
     if (isNaN(digitoVerificador)) {
@@ -379,7 +370,10 @@ function algoritmoModulo10(
   for (let i = 0; i < digitosIniciales.length; i++) {
     const digitoActual = parseInt(digitosIniciales[i], 10);
     if (isNaN(digitoActual)) {
-      throw new Error(`El dígito en la posición ${i+1} de los dígitos iniciales no es un número.`);
+      throw new Error(
+        `El dígito en la posición ${i +
+          1} de los dígitos iniciales no es un número.`
+      );
     }
     let valorPosicion = digitoActual * arrayCoeficientes[i];
 
@@ -391,7 +385,8 @@ function algoritmoModulo10(
     total = total + valorPosicion;
   }
 
-  residuo = total % 10;
+  const residuo = total % 10;
+  let resultado: number;
 
   if (residuo === 0) {
     resultado = 0;
@@ -406,8 +401,6 @@ function algoritmoModulo10(
   return true;
 }
 
-/**
-/**
 /**
  * Aplica el algoritmo "Módulo 11" para validar el dígito verificador de RUC de sociedades (privadas o públicas) ecuatorianas.
  * Este algoritmo es específico para la validación de estos tipos de RUC en Ecuador.
@@ -448,26 +441,33 @@ function algoritmoModulo11(
     case 'ruc_privada':
       // Para RUC de sociedades privadas, se usan los 9 primeros dígitos y los coeficientes: [4, 3, 2, 7, 6, 5, 4, 3, 2]
       if (digitosIniciales.length !== 9) {
-        throw new Error("Los dígitos iniciales para RUC privado (Módulo 11) deben ser 9.");
+        throw new Error(
+          'Los dígitos iniciales para RUC privado (Módulo 11) deben ser 9.'
+        );
       }
       arrayCoeficientes = [4, 3, 2, 7, 6, 5, 4, 3, 2];
       break;
     case 'ruc_publica':
       // Para RUC de sociedades públicas, se usan los 8 primeros dígitos y los coeficientes: [3, 2, 7, 6, 5, 4, 3, 2]
       if (digitosIniciales.length !== 8) {
-        throw new Error("Los dígitos iniciales para RUC público (Módulo 11) deben ser 8.");
+        throw new Error(
+          'Los dígitos iniciales para RUC público (Módulo 11) deben ser 8.'
+        );
       }
       arrayCoeficientes = [3, 2, 7, 6, 5, 4, 3, 2];
       break;
     default:
       // Esto no debería ocurrir si el tipado se usa correctamente, pero es una salvaguarda.
-      // @ts-expect-error exhaustive check
-      throw new Error(`Tipo de Identificación "${tipo}" no es válido para el algoritmo Módulo 11.`);
+      throw new Error(
+        `Tipo de Identificación "${tipo}" no es válido para el algoritmo Módulo 11.`
+      );
   }
 
   if (typeof digitoVerificadorParam === 'string') {
-     if (digitoVerificadorParam.length !== 1) {
-      throw new Error("El dígito verificador debe ser un solo carácter numérico.");
+    if (digitoVerificadorParam.length !== 1) {
+      throw new Error(
+        'El dígito verificador debe ser un solo carácter numérico.'
+      );
     }
     digitoVerificador = parseInt(digitoVerificadorParam, 10);
     if (isNaN(digitoVerificador)) {
@@ -481,16 +481,19 @@ function algoritmoModulo11(
 
   for (let i = 0; i < digitosIniciales.length; i++) {
     const digitoActual = parseInt(digitosIniciales[i], 10);
-     if (isNaN(digitoActual)) {
-      throw new Error(`El dígito en la posición ${i+1} de los dígitos iniciales no es un número.`);
+    if (isNaN(digitoActual)) {
+      throw new Error(
+        `El dígito en la posición ${i +
+          1} de los dígitos iniciales no es un número.`
+      );
     }
     const valorPosicion = digitoActual * arrayCoeficientes[i];
     total = total + valorPosicion;
   }
 
-  residuo = total % 11;
+  const residuo = total % 11;
 
-  resultado = residuo === 0 ? 0 : 11 - residuo;
+  const resultado = residuo === 0 ? 0 : 11 - residuo;
 
   if (resultado !== digitoVerificador) {
     throw new Error('Dígitos iniciales no validan contra Dígito Idenficador');
@@ -499,7 +502,6 @@ function algoritmoModulo11(
   return true;
 }
 
-/**
 export default validar;
 
 /**
